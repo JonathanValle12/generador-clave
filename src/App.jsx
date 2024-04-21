@@ -35,39 +35,30 @@ function App() {
     setPalabraGenerada(palabra);
     setCopied(false);
 
-    let fortaleza = '';
+    evaluarFortaleza(palabra);
+};
 
-     // Verificar la fortaleza de la contraseña
-    const hasUpperCase = /[A-Z]/.test(palabra);
-    const hasLowerCase = /[a-z]/.test(palabra);
-    const hasNumber = /\d/.test(palabra);
-    const hasSymbol = /[^A-Za-z0-9]/.test(palabra);
-  
-    // Si todas las opciones están activadas
-    if (configuracion.mayusculas && configuracion.minusculas && configuracion.numeros && configuracion.simbolos) {
-      if (palabra.length >= 16 && hasUpperCase && hasLowerCase && hasNumber && hasSymbol) {
-        fortaleza = 'contraseñaFuerte';
-      } else if (palabra.length >= 12 && hasUpperCase && hasLowerCase && hasNumber) {
-        fortaleza = 'contraseñaMedia';
-      } else {
-        fortaleza = 'contraseñaDebil';
-      }
-    } else {
-      // Si al menos una opción está desactivada
-      if (palabra.length >= 8) {
-        if ((configuracion.mayusculas && configuracion.minusculas && hasNumber) ||
-            (configuracion.minusculas && configuracion.numeros && hasUpperCase) ||
-            (configuracion.numeros && configuracion.simbolos && hasLowerCase)) {
-          fortaleza = 'contraseñaFuerte';
-        } else {
-          fortaleza = 'contraseñaDebil';
-        }
-      } else {
-        fortaleza = 'contraseñaDebil';
-      }
-    }
-  
-    setFortalezaContraseña(fortaleza);
+const evaluarFortaleza = (palabra) => {
+  const hasUpperCase = /[A-Z]/.test(palabra);
+  const hasLowerCase = /[a-z]/.test(palabra);
+  const hasNumber = /\d/.test(palabra);
+  const hasSymbol = /[^A-Za-z0-9]/.test(palabra);
+  let fortaleza = 'contraseñaDebil';
+
+  const conditionsMet = [
+    configuracion.mayusculas && hasUpperCase,
+    configuracion.minusculas && hasLowerCase,
+    configuracion.numeros && hasNumber,
+    configuracion.simbolos && hasSymbol
+  ].filter(Boolean).length;
+
+  if (palabra.length >= 12 && conditionsMet >= 3) {
+    fortaleza = 'contraseñaFuerte';
+  } else if (palabra.length >= 8 && conditionsMet >= 2) {
+    fortaleza = 'contraseñaMedia';
+  }
+
+  setFortalezaContraseña(fortaleza);
 };
 
   const handleConfiguracionChange = (e) => {
